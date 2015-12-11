@@ -1,0 +1,79 @@
+modify_node_src_ovs = {
+            "switch": ovs_dpid,
+            "name":"modify_node_src_ovs-" + node_host + "-" + node_port + "-" + expr,
+            "cookie":"0",
+            "priority":"32766",
+            "ether-type":"0x0800",
+            "protocol":"0x06",
+            "src-ip":node_host,
+            "src-mac":"00:0d:88:cc:db:47",
+            "src-port":node_port,
+            "active":"true",
+            "actions":"set-src-port=80,set-src-ip=" + expr + ",output=2"
+        }
+    	modify_server_dst_ovs = {
+            "switch": ovs_dpid,
+            "name":"modify_server_dst_ovs-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"32766",
+            "ether-type":"0x0800",
+            "protocol":"0x06",
+            "dst-ip":expr,
+            "dst-port":"80",
+            "active":"true",        
+            "actions":"set-dst-mac=00:0d:88:cc:db:47,set-dst-ip=" + node_host + ",set-dst-port=" + node_port +",output=2"
+        }
+        server_dst_go_ovs = {
+            "switch": of_dpid,
+            "name":"server_dst_go_ovs-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"1",
+            "ether-type":"0x0800",
+            "protocol":"0x06",
+            "dst-ip":expr,
+            "dst-port":"80",
+            "active":"true",        
+            "actions":"output=" + to_ovs
+        }
+        node_to_server = {
+            "switch":  of_dpid,
+            "name":"node_to_server-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"5",
+            "ether-type":"0x0800",
+            "protocol":"0x06",
+            "src-mac":"00:0d:88:cc:db:47",
+            "src-ip":node_host,
+            "dst-ip":expr,
+            "dst-port":"80",
+            "active":"true",        
+            "actions":"output=" + to_server
+        }
+        node_src_go_ovs = {
+            "switch": of_dpid,
+            "name":"node_src_go_ovs-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"1",
+            "ether-type":"0x0800",
+            "protocol":"0x06",
+            "src-mac":"00:0d:88:cc:db:47",
+            "src-ip":node_host,
+            "active":"true",        
+            "actions":"output=" + to_ovs
+        }
+        ovs_output_to_OCN = {
+            "switch": of_dpid,
+            "name":"ovs_output_to_OCN-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"1",
+            "ether-type":"0x0800",
+            "ingress-port": from_ovs,
+            "dst-ip":node_host,
+            "active":"true",        
+            "actions":"output=" + to_ocn
+        }
+    	ovs_output_to_client = {
+            "switch": of_dpid,
+            "name":"ovs_output_to_client-" + node_host + "-" + node_port + "-" + expr,
+            "priority":"1",
+            "ether-type":"0x0800",
+            "ingress-port": from_ovs,
+            "src-ip":expr,
+            "active":"true",        
+            "actions":"output=" + to_client
+        }

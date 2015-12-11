@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#Adatbázis inicializálása
+sudo rm /var/lib/mongodb/mongod.lock
+sudo mongod --repair -f /etc/mongod.conf
+sudo mongod -f /etc/mongod.conf&
+
+echo Javítás kész
+clear
+
+#route bejegyzések inicializálása
+sudo ip route del 192.168.0.0/24 dev eth2
+
+#kernel space OVS indítása
+ovsdb-server --remote=punix:/usr/local/var/run/openvswitch/db.sock \
+                    --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+                    --private-key=db:Open_vSwitch,SSL,private_key \
+                    --certificate=db:Open_vSwitch,SSL,certificate \
+                    --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert \
+                    --pidfile --detach
+
+ovs-vswitchd --pidfile --detach
+echo OVS elindult
+sleep 2
+
+
+#Floodligth controller indítása
+echo Floodlight indítása...
+gnome-terminal -e "java -jar /home/sdn-tmit/floodlight-0.91/target/floodlight.jar > oc-log/fl-log.log"&
+sleep 10
+
+#OCC indítása
+echo OCC indítása...
+gnome-terminal -e "opencache -c --config=/home/sdn-tmit/opencache/examples/config/controller.conf 2>&1 | tee oc-log/occ-log.log"&
+sleep 3
+
+#OCN indítása
+echo OCN indítása...
+gnome-terminal -e "opencache -n --config=/home/sdn-tmit/opencache/examples/config/node.conf 2>&1 | tee oc-log/ocn-log.log"&
+sleep 3
+
+#OC-Console indítása
+echo OC-Console indítása...
+gnome-terminal -e "python /home/sdn-tmit/opencache-console/console/console.py 2>&1 | tee oc-log/gui-log.log"
+
+echo OpenCache rendszer elindult
+
+
+

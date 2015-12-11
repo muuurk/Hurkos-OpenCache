@@ -1,0 +1,33 @@
+#!/bin/bash
+
+sudo -s
+
+#route bejegyzések inicializálása
+sudo ip route del 192.168.0.0/24 dev eth2
+
+#kernel space OVS indítása
+ovsdb-server --remote=punix:/usr/local/var/run/openvswitch/db.sock \
+                    --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+                    --private-key=db:Open_vSwitch,SSL,private_key \
+                    --certificate=db:Open_vSwitch,SSL,certificate \
+                    --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert \
+                    --pidfile --detach
+
+ovs-vswitchd --pidfile --detach
+sleep 1
+
+#Floodligth controller indítása
+java -jar /home/sdn-tmit/floodligth-0.91/target/floodlight.jar
+sleep 10
+
+
+#OCC indítása
+gnome-terminal
+opencache -c --config=/home/sdn-tmit/opencache/examples/config/controller.conf
+sleep 3
+
+#OCN indítása
+gnome-terminal
+opencache -n --config=/home/sdn-tmit/opencache/examples/config/node.conf
+
+echo OVS elindult.

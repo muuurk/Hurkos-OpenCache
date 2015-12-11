@@ -1,0 +1,26 @@
+#Sample configuration file for an OpenCache controller.
+#Can be used to test-run controller and node on the same OS.
+
+[config]
+controller_host = 192.168.0.3
+controller_port = 49001
+notification_port = 50001
+database_host = 192.168.0.3
+database_port = 27017
+openflow_host = 127.0.0.1
+openflow_port = 8080
+log_path = /var/log/opencache/
+node_timeout = 30
+verbosity = 3
+openflow_switch_dpid = 00:03:4c:5e:0c:4d:74:b8
+ovs_dpid = 00:00:00:24:8c:73:97:25
+ofswitch_outport_to_ovs = 1
+ofswitch_outport_to_server = 6
+ofswitch_inport_from_ovs = 4
+ofswitch_outport_to_ocn = 3
+ofswitch_outport_to_client = 2
+
+
+
+
+
